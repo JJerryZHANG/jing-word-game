@@ -1,0 +1,12 @@
+.container{
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  padding: 10px;
+  background-clip: content-box;
+
+  .content{
+    margin: 10px 0;
+  }
+
+}
