@@ -2,11 +2,21 @@
   box-sizing: border-box;
   width: 100vw;
   height: 100vh;
-  padding: 10px;
+  padding: 20px;
   background-clip: content-box;
 
   .content{
-    margin: 10px 0;
+
   }
 
+}
+
+.no-scrollbar {
+  overflow: auto;
+  -ms-overflow-style: none;  /* IE 和 Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
