@@ -11,42 +11,58 @@ import FourthLesson from "./components/FourthLesson/index.js";
 import { useReducer } from "react";
 import AddTask from "./components/EighthLesson/AddTask.js";
 import TaskList from "./components/EighthLesson/TaskList.js";
+import { TasksProvider } from "./components/EighthLesson/TasksContext.js";
 
 function TaskApp() {
   const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
 
-  function handleAddTask(text) {
-    dispatch({
-      type: "added",
-      id: nextId++,
-      text: text,
-    });
-  }
+  // function handleAddTask(text) {
+  //   dispatch({
+  //     type: "added",
+  //     id: nextId++,
+  //     text: text,
+  //   });
+  //   console.log(tasks);
+  // }
 
-  function handleChangeTask(task) {
-    dispatch({
-      type: "changed",
-      task: task,
-    });
-  }
+  // function handleChangeTask(task) {
+  //   dispatch({
+  //     type: "changed",
+  //     task: task,
+  //   });
+  // }
 
-  function handleDeleteTask(taskId) {
-    dispatch({
-      type: "deleted",
-      id: taskId,
-    });
-  }
+  // function handleDeleteTask(taskId) {
+  //   dispatch({
+  //     type: "deleted",
+  //     id: taskId,
+  //   });
+  // }
 
+  // return (
+  //   <>
+  //     <h1>Day off in Kyoto</h1>
+  //     <AddTask onAddTask={handleAddTask} />
+  //     <TaskList
+  //       tasks={tasks}
+  //       onChangeTask={handleChangeTask}
+  //       onDeleteTask={handleDeleteTask}
+  //     />
+  //   </>
+  // );
   return (
-    <>
-      <h1>布拉格行程</h1>
-      <AddTask onAddTask={handleAddTask} />
-      <TaskList
-        tasks={tasks}
-        onChangeTask={handleChangeTask}
-        onDeleteTask={handleDeleteTask}
-      />
-    </>
+    // <TasksContext.Provider value={tasks}>
+    //   <TasksDispatchContext.Provider value={dispatch}>
+    //     <h1>Day off in Kyoto</h1>
+    //     <AddTask />
+    //     <TaskList />
+    //   </TasksDispatchContext.Provider>
+    // </TasksContext.Provider>
+    <TasksProvider>
+      <h1>Day off in Kyoto</h1>
+      <AddTask />
+      <TaskList />
+    </TasksProvider>
   );
 }
 
@@ -75,16 +91,16 @@ function tasksReducer(tasks, action) {
       return tasks.filter((t) => t.id !== action.id);
     }
     default: {
-      throw Error("未知操作：" + action.type);
+      throw Error("Unknown action: " + action.type);
     }
   }
 }
 
 let nextId = 3;
 const initialTasks = [
-  { id: 0, text: "参观卡夫卡博物馆", done: true },
-  { id: 1, text: "看木偶戏", done: false },
-  { id: 2, text: "列侬墙图片", done: false },
+  { id: 0, text: "Philosopher’s Path", done: true },
+  { id: 1, text: "Visit the temple", done: false },
+  { id: 2, text: "Drink matcha", done: false },
 ];
 
 function TrafficLight() {

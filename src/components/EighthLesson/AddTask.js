@@ -1,38 +1,31 @@
-import React, { useState } from "react";
+import { useState, useContext } from "react";
+import { TasksDispatchContext } from "./TasksContext.js";
 
-const AddTask = ({ onAddTask }) => {
-  // 使用useState钩子来管理输入框的状态
-  const [inputText, setInputText] = useState("");
-
-  // 处理输入框值变化的函数
-  const handleInputChange = (e) => {
-    setInputText(e.target.value);
-  };
-
-  // 处理表单提交的函数
-  const handleFormSubmit = (e) => {
-    e.preventDefault(); // 阻止表单默认提交行为
-    if (inputText.trim() === "") {
-      alert("任务内容不能为空");
-      return;
-    }
-    // 调用父组件传递的回调函数，传递任务内容
-    onAddTask(inputText);
-    // 清空输入框
-    setInputText("");
-  };
-
+// onAddTask函数在App.js定义
+export default function AddTask() {
+  const [text, setText] = useState("");
+  const dispatch = useContext(TasksDispatchContext);
   return (
-    <form onSubmit={handleFormSubmit}>
+    <>
       <input
-        type="text"
-        value={inputText}
-        onChange={handleInputChange}
-        placeholder="添加新任务..."
+        placeholder="Add task"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
       />
-      <button type="submit">添加任务</button>
-    </form>
+      <button
+        onClick={() => {
+          setText("");
+          dispatch({
+            type: "added",
+            id: nextId++,
+            text: text,
+          });
+        }}
+      >
+        Add
+      </button>
+    </>
   );
-};
+}
 
-export default AddTask;
+let nextId = 3;

@@ -1,81 +1,79 @@
-import React, { useState } from "react";
+import { useState, useContext } from "react";
+import { TasksContext, TasksDispatchContext } from "./TasksContext.js";
 
-const TaskList = ({ tasks, onChangeTask, onDeleteTask }) => {
-  // 不需要使用 useState 钩子
-
-  const handleChangeTask = (taskId) => {
-    const task = tasks.find((t) => t.id === taskId);
-    const updatedTask = { ...task, done: !task.done };
-    onChangeTask(updatedTask);
-  };
-
-  const handleDeleteTask = (taskId) => {
-    onDeleteTask(taskId);
-  };
-
-  const handleEditTask = (taskId) => (e) => {
-    const newText = e.target.value;
-    const updatedTask = {
-      ...tasks.find((t) => t.id === taskId),
-      text: newText,
-    };
-    onChangeTask(updatedTask);
-  };
-
-  const handleTaskChange = (taskId) => (e) => {
-    const taskIndex = tasks.findIndex((t) => t.id === taskId);
-    if (taskIndex !== -1) {
-      // 注意：这里需要更新父组件的状态，而不是本地状态
-      const newTasks = [...tasks];
-      newTasks[taskIndex] = { ...newTasks[taskIndex], text: e.target.value };
-      onChangeTask(newTasks[taskIndex]); // 假设 onChangeTask 可以处理整个任务对象的更新
-    }
-  };
-
-  const handleToggleEdit = (taskId) => () => {
-    const taskIndex = tasks.findIndex((t) => t.id === taskId);
-    if (taskIndex !== -1) {
-      // 注意：这里需要更新父组件的状态，而不是本地状态
-      const newTasks = [...tasks];
-      newTasks[taskIndex] = {
-        ...newTasks[taskIndex],
-        editing: !newTasks[taskIndex].editing,
-      };
-      onChangeTask(newTasks[taskIndex]); // 假设 onChangeTask 可以处理整个任务对象的更新
-    }
-  };
-
+export default function TaskList() {
+  const tasks = useContext(TasksContext);
   return (
     <ul>
       {tasks.map((task) => (
         <li key={task.id}>
-          {task.editing ? (
-            <>
-              <input
-                type="text"
-                value={task.text}
-                onChange={handleTaskChange(task.id)}
-              />
-              <button onClick={handleToggleEdit(task.id)}>保存</button>
-            </>
-          ) : (
-            <>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={task.done}
-                  onChange={() => handleChangeTask(task.id)}
-                />
-                {task.text}
-              </label>
-              <button onClick={handleToggleEdit(task.id)}>编辑</button>
-              <button onClick={() => handleDeleteTask(task.id)}>删除</button>
-            </>
-          )}
+          {/* <Task task={task} onChange={onChangeTask} onDelete={onDeleteTask} /> */}
+          <Task task={task} />
         </li>
       ))}
     </ul>
   );
-};
+}
 
-export default TaskList;
+/* 列表中包含多个Task */
+// onChange 函数在App.js定义， 用于返回修改后的task
+// onDelete 函数在App.js定义， 用于删除特定task
+function Task({ task, onChange, onDelete }) {
+  const [isEditing, setIsEditing] = useState(false); //控制编辑状态
+  const dispatch = useContext(TasksDispatchContext);
+  let taskContent;
+  if (isEditing) {
+    taskContent = (
+      <>
+        <input
+          value={task.text}
+          onChange={(e) => {
+            dispatch({
+              type: "changed",
+              task: {
+                ...task,
+                text: e.target.value,
+              },
+            });
+          }}
+        />
+        <button onClick={() => setIsEditing(false)}>Save</button>
+      </>
+    );
+  } else {
+    taskContent = (
+      <>
+        {task.text}
+        <button onClick={() => setIsEditing(true)}>Edit</button>
+      </>
+    );
+  }
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={task.done}
+        onChange={(e) => {
+          dispatch({
+            type: "changed",
+            task: {
+              ...task,
+              done: e.target.checked,
+            },
+          });
+        }}
+      />
+      {taskContent}
+      <button
+        onClick={() => {
+          dispatch({
+            type: "deleted",
+            id: task.id,
+          });
+        }}
+      >
+        Delete
+      </button>
+    </label>
+  );
+}
